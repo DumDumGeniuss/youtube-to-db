@@ -1,0 +1,4 @@
+module.exports = {
+  youtube_app_key: 'XXXXXXX',
+  firebase_app_key: 'YYYYYYY,
+};
