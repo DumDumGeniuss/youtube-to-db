@@ -1,52 +1,24 @@
-const youtubeApi = require('./youtubeApi');
-const firebaseTool = require('./firebaseTool');
+const youtubeApi = require('../libs/youtubeApi');
+const config = require('../config');
+const ChannelModel = require('../models/Channel');
+const tinyHelper = require('../libs/tinyHelper');
+const mongoHelper = require('../libs/mongoHelper');
 
-const database = firebaseTool.getDatabaseConnection();
 
-/* Split big array to lots of arrays */
-function splitArray(array, count) {
-  const final = [];
-  const arraySize = array.length;
-  let newArray = [];
-  for (let i = 0; i < arraySize; i++) {
-    if (i % count === 0 && i !== 0) {
-      final.push(newArray);
-      newArray = [];
-    }
-    newArray.push(array[i]);
-  }
-  final.push(newArray);
-  return final;
-}
+async function saveChannelsInfo() {
+  /* Wait for mongodb connection */
+  const mongoConnection = await mongoHelper.getConnection();
 
-function encryptChannelInfo(item) {
-  return {
-    etag: item.etag,
-    id: item.id,
-    title: item.snippet.title,
-    description: item.snippet.description,
-    publishedAt: item.snippet.publishedAt,
-    defaultThumbnails: item.snippet.thumbnails.default.url,
-    mediumThumbnails: item.snippet.thumbnails.medium.url,
-    highThumbnails: item.snippet.thumbnails.high.url,
-    viewCount: item.statistics.viewCount,
-    commentCount: item.statistics.commentCount,
-    subscriberCount: item.statistics.subscriberCount,
-    videoCount: item.statistics.videoCount,
-  }
-}
+  /* Get all channels' Id */
+  const channelIds = await mongoHelper.getChannelIds();
 
-async function saveChannelsInfo(database) {
-  /* Get all youtube channels' id */
-  const youtubers = await firebaseTool.getAllYoutubers(database);
+  /*  Split an array to pieces and push then to an array */
+  const splittedYoutubers = tinyHelper.splitArray(channelIds, 5);
 
-  /* We can query limited number of channels, so you cut it it pieces */
-  /* e.x:  [1,2,3,4,5] => [[1,2],[3,4],[5]] */
-  const splittedYoutubers = splitArray(youtubers, 5);
-
+  /* get lots of channels' info, but youtuber Api has limits, so we may need to query more than one time */
   const getChannelsPromises = [];
   splittedYoutubers.forEach((item) => {
-    getChannelsPromises.push(youtubeApi.getChannels(['statistics', 'snippet'], item));
+    getChannelsPromises.push(youtubeApi.getChannels(item));
   });
 
   /* Each result even contains lots of results, so we do loop twice */
@@ -54,13 +26,20 @@ async function saveChannelsInfo(database) {
   const channels = [];
   resFromChannelPromises.forEach((channelItems) => {
     channelItems.forEach((channelItem) => {
-      channels.push(encryptChannelInfo(channelItem));
+      channels.push(tinyHelper.encryptChannelInfo(channelItem));
     });
   });
 
-  firebaseTool.savingAllChannels(database, channels);
-
-  firebaseTool.closeConnectionAfterSecs(database, 10);
+  /* Use this index to check if all the promises done */
+  let checkSaveEndIndex = 0;
+  const channelsSize = channels.length;
+  channels.forEach(async function (channel) {
+    await mongoHelper.saveChannel(channel);
+    checkSaveEndIndex += 1;
+    if (checkSaveEndIndex === channelsSize) {
+      mongoConnection.close();
+    }
+  });
 }
 
-saveChannelsInfo(database);
+saveChannelsInfo();
