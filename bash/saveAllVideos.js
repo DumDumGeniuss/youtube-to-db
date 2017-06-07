@@ -54,6 +54,7 @@ async function saveAllVideosInfo() {
     /* Use this index to check if all the promises done */
     let checkSaveEndIndex = 0;
     const finalVideosSize = finalVideos.length;
+    console.log(finalVideos.length);
     finalVideos.forEach(async function (video) {
       await mongoHelper.saveVideo(video);
       checkSaveEndIndex += 1;

@@ -17,7 +17,6 @@ exports.getConnection = function () {
 exports.getChannelIds = async function () {
   const channels = await ChannelModel.find({});
   const channelIds = [];
-  console.log(channels);
   channels.forEach((channel) => {
     channelIds.push(channel._id);
   });

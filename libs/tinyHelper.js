@@ -24,10 +24,10 @@ exports.encryptChannelInfo = function (item) {
     defaultThumbnails: item.snippet.thumbnails.default.url,
     mediumThumbnails: item.snippet.thumbnails.medium.url,
     highThumbnails: item.snippet.thumbnails.high.url,
-    viewCount: parseInt(item.statistics.viewCount, 10),
-    commentCount: parseInt(item.statistics.commentCount, 10),
-    subscriberCount: parseInt(item.statistics.subscriberCount, 10),
-    videoCount: parseInt(item.statistics.videoCount, 10),
+    viewCount: parseInt(item.statistics.viewCount || 0, 10),
+    commentCount: parseInt(item.statistics.commentCount || 0, 10),
+    subscriberCount: parseInt(item.statistics.subscriberCount || 0, 10),
+    videoCount: parseInt(item.statistics.videoCount || 0, 10),
   }
 };
 
@@ -44,9 +44,9 @@ exports.encryptVideoInfo = function (video) {
     	highThumbnails: video.snippet.thumbnails.high.url,
     	standard: video.snippet.thumbnails.high.standard,
     	duration: video.contentDetails.duration,
-    	viewCount: video.statistics.viewCount,
-    	likeCount: video.statistics.likeCount,
-    	dislikeCount: video.statistics.dislikeCount,
-    	commentCount: video.statistics.commentCount,
+    	viewCount: parseInt(video.statistics.viewCount || 0, 10),
+    	likeCount: parseInt(video.statistics.likeCount || 0, 10),
+    	dislikeCount: parseInt(video.statistics.dislikeCount || 0, 10),
+    	commentCount: parseInt(video.statistics.commentCount || 0, 10),
 	};
 }
