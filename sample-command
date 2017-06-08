@@ -1,0 +1,8 @@
+#save targeted channel's all videos
+node bash/saveAllVideos.js --channelId UCyD3eaCai2yyWZEuczgZ-fw
+
+#save all videos of all channels
+node bash/saveAllVideos.js
+
+#save all channels' info
+node bash/saveChannels.js

@@ -9,6 +9,7 @@
     "firebase": "^4.1.1",
     "isomorphic-fetch": "^2.2.1",
     "mongoose": "^4.10.4",
-    "promise": "^7.1.1"
+    "promise": "^7.1.1",
+    "yargs": "^8.0.1"
   }
 }

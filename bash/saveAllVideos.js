@@ -1,6 +1,7 @@
 const youtubeApi = require('../libs/youtubeApi');
 const tinyHelper = require('../libs/tinyHelper');
 const mongoHelper = require('../libs/mongoHelper');
+const argv = require('yargs').argv;
 
 /* get all videos from a channel, but it may contains lots of videos, so we may query lots of times */
 async function getAllChannelVideos(channelId) {
@@ -28,12 +29,17 @@ async function getAllVideos(ids) {
 	return videos;
 }
 
-async function saveAllVideosInfo() {
+async function saveAllVideosInfo(targetId) {
   /* Wait for mongodb connection */
   const mongoConnection = await mongoHelper.getConnection();
 
+  let channelIds;
 
-	const channelIds = await mongoHelper.getChannelIds();
+  if (targetId) {
+    channelIds = [targetId];
+  } else {
+    channelIds = await mongoHelper.getChannelIds();
+  }
 
   /* Because each channel has lots of videos, so we separate it */
 	channelIds.forEach(async function (channelId) {
@@ -64,4 +70,5 @@ async function saveAllVideosInfo() {
     });
 	});
 }
-saveAllVideosInfo();
+
+saveAllVideosInfo(argv.channelId);
