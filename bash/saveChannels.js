@@ -21,6 +21,7 @@ async function saveChannelsInfo() {
     splittedYoutubers.forEach((item) => {
       getChannelsPromises.push(youtubeApi.getChannels(item));
     });
+    console.log('Calling youtube Api ' + getChannelsPromises.length + ' times');
   
     /* Each result even contains lots of results, so we do loop twice */
     const resFromChannelPromises = await Promise.all(getChannelsPromises);
