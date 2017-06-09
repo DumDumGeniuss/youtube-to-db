@@ -36,6 +36,7 @@ exports.encryptVideoInfo = function (video) {
     	etag: video.etag,
 		_id: video.id,
 		publishedAt: video.snippet.publishedAt,
+		channelTitle: video.snippet.channelTitle,
 		channelId: video.snippet.channelId,
 		title: video.snippet.title,
 		description: video.snippet.description,

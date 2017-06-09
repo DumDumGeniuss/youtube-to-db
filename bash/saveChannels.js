@@ -42,4 +42,4 @@ async function saveChannelsInfo() {
   });
 }
 
-saveChannelsInfo();
+module.exports = saveChannelsInfo;

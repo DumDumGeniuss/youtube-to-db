@@ -41,9 +41,10 @@ exports.getVideos = (ids) => {
 };
 
 /* Get all videos from on channel */
-exports.getChannelVideos = (channelId, pageToken) => {
+exports.getChannelVideos = (channelId, pageToken, date) => {
   let queryString;
-  queryString = `?part=snippet&type=video&channelId=${channelId}&key=${apiKey}&maxResults=50&order=date&pageToken=${pageToken}`;
+  let queryDate = date || '1970-01-01T00:00:00Z';
+  queryString = `?part=snippet&type=video&channelId=${channelId}&key=${apiKey}&maxResults=50&order=date&pageToken=${pageToken}&publishedAfter=${queryDate}`;
 
   return fetch(youtubeApi + 'search' + queryString, {
     method: 'GET',

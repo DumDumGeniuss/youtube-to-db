@@ -1,17 +1,17 @@
 const youtubeApi = require('../libs/youtubeApi');
 const tinyHelper = require('../libs/tinyHelper');
 const mongoHelper = require('../libs/mongoHelper');
-const argv = require('yargs').argv;
+const moment = require('moment');
 
 /* get all videos from a channel, but it may contains lots of videos, so we may query lots of times */
-async function getAllChannelVideos(channelId) {
+async function getAllChannelVideos(channelId, date) {
 	let videos = [];
 	let nextToken;
-	const result = await youtubeApi.getChannelVideos(channelId, '');
+	const result = await youtubeApi.getChannelVideos(channelId, '', date);
 	nextToken = result.nextPageToken;
 	videos = videos.concat(result.items);
 	while (nextToken) {
-		let nextResult = await youtubeApi.getChannelVideos(channelId, nextToken);
+		let nextResult = await youtubeApi.getChannelVideos(channelId, nextToken, date);
 		nextToken = nextResult.nextPageToken;
 		videos = videos.concat(nextResult.items);
 	}
@@ -29,7 +29,7 @@ async function getAllVideos(ids) {
 	return videos;
 }
 
-async function saveAllVideosInfo(targetId) {
+async function saveAllVideosInfo(targetId, onlyToday) {
   /* Wait for mongodb connection */
   const mongoConnection = await mongoHelper.getConnection();
 
@@ -41,9 +41,12 @@ async function saveAllVideosInfo(targetId) {
     channelIds = await mongoHelper.getChannelIds();
   }
 
+  /* Find all videos after a date */
+  const startDate = onlyToday? moment(new Date()).utc().add(-1, 'days').format() : null;
+
   /* Because each channel has lots of videos, so we separate it */
 	channelIds.forEach(async function (channelId) {
-		const channelVideos = await getAllChannelVideos(channelId);
+		const channelVideos = await getAllChannelVideos(channelId, startDate);
 		const videoIds = [];
 		const channelVideosMap = {};
 		channelVideos.forEach((item) => {
@@ -57,10 +60,11 @@ async function saveAllVideosInfo(targetId) {
 			finalVideos.push(tinyHelper.encryptVideoInfo(video));
 		});
 
+    console.log(finalVideos.length);
+
     /* Use this index to check if all the promises done */
     let checkSaveEndIndex = 0;
     const finalVideosSize = finalVideos.length;
-    console.log(finalVideos.length);
     finalVideos.forEach(async function (video) {
       await mongoHelper.saveVideo(video);
       checkSaveEndIndex += 1;
@@ -71,4 +75,6 @@ async function saveAllVideosInfo(targetId) {
 	});
 }
 
-saveAllVideosInfo(argv.channelId);
+module.exports = saveAllVideosInfo;
+
+// saveAllVideosInfo(argv.channelId, argv.onlyToday);

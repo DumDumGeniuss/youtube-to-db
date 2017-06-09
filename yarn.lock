@@ -311,7 +311,7 @@ mimic-fn@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.1.0.tgz#e667783d92e89dbd342818b5230b9d62a672ad18"
 
-moment@2.x.x:
+moment@2.x.x, moment@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
@@ -371,6 +371,10 @@ ms@2.0.0, ms@^2.0.0:
 muri@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/muri/-/muri-1.2.1.tgz#ec7ea5ce6ca6a523eb1ab35bacda5fa816c9aa3c"
+
+node-cron@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-1.2.0.tgz#024987b1b492044aa00d75f5ca64aa7c94e0d256"
 
 node-fetch@^1.0.1:
   version "1.7.1"

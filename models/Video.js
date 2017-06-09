@@ -21,6 +21,10 @@ const model = mongoose.model('Video', {
     type: String,
     required: true,
   },
+  channelTitle: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     required: true,
