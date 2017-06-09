@@ -49,6 +49,10 @@ const model = mongoose.model('Channel', {
     type: Number,
     required: true,
   },
+  randomNumber: {
+    type: Number,
+    required: true,
+  },
 });
 
 module.exports = model;

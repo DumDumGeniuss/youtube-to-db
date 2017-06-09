@@ -69,6 +69,10 @@ const model = mongoose.model('Video', {
     type: Number,
     required: true,
   },
+  randomNumber: {
+    type: Number,
+    required: true,
+  },
 });
 
 module.exports = model;
