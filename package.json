@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "cron": "^1.2.1",
     "es6-promise": "^4.1.0",
     "firebase": "^4.1.1",
     "isomorphic-fetch": "^2.2.1",

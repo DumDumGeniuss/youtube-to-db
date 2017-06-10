@@ -17,4 +17,4 @@ RUN yarn install -g
 COPY . .
 
 # Run the command on container startup
-CMD /usr/local/bin/node /usr/src/app/crons/runSaveChannels.js & /usr/local/bin/node /usr/src/app/crons/runSaveAllVideosHour.js & /usr/local/bin/node /usr/src/app/crons/runSaveAllVideosDay.js
+CMD /usr/local/bin/node /usr/src/app/crons/cronjob.js
