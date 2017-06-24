@@ -1,0 +1,6 @@
+version: '2'
+services:
+  web:
+    build: .
+    command:
+        ['/usr/local/bin/node', '/usr/src/app/crons/cronjob.js']
