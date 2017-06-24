@@ -24,6 +24,7 @@ exports.encryptChannelInfo = function (item) {
     defaultThumbnails: item.snippet.thumbnails.default.url,
     mediumThumbnails: item.snippet.thumbnails.medium.url,
     highThumbnails: item.snippet.thumbnails.high.url,
+    bannerTvImageUrl: item.brandingSettings.image.bannerTvImageUrl,
     viewCount: parseInt(item.statistics.viewCount || 0, 10),
     commentCount: parseInt(item.statistics.commentCount || 0, 10),
     subscriberCount: parseInt(item.statistics.subscriberCount || 0, 10),

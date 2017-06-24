@@ -13,6 +13,8 @@ async function saveChannelsInfo() {
     /* Get all channels' Id */
     const channelIds = await mongoHelper.getChannelIds();
   
+    console.log('Channel Number: ' + channelIds.length);
+
     /*  Split an array to pieces and push then to an array */
     const splittedYoutubers = tinyHelper.splitArray(channelIds, 50);
   
@@ -21,7 +23,6 @@ async function saveChannelsInfo() {
     splittedYoutubers.forEach((item) => {
       getChannelsPromises.push(youtubeApi.getChannels(item));
     });
-    console.log('Calling youtube Api ' + getChannelsPromises.length + ' times');
   
     /* Each result even contains lots of results, so we do loop twice */
     const resFromChannelPromises = await Promise.all(getChannelsPromises);

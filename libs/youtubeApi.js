@@ -9,7 +9,7 @@ exports.getChannels = (ids) => {
   let idParam = '';
   let queryString;
   idParam = encodeURIComponent(ids.toString());
-  queryString = '?part=statistics,snippet&id=' + idParam + '&key=' + apiKey;
+  queryString = '?part=statistics,snippet,brandingSettings&id=' + idParam + '&key=' + apiKey;
 
   return fetch(youtubeApi + 'channels' + queryString, {
     method: 'GET',
@@ -18,7 +18,13 @@ exports.getChannels = (ids) => {
     return res.json();
   })
   .then((res) => {
+    if (res.error) {
+      console.log(res.error);
+    }
     return res.items;
+  })
+  .catch((err) => {
+    console.log(err);
   });
 };
 
@@ -36,7 +42,13 @@ exports.getVideos = (ids) => {
     return res.json();
   })
   .then((res) => {
+    if (res.error) {
+      console.log(res.error);
+    }
     return res.items;
+  })
+  .catch((err) => {
+    console.log(err);
   });
 };
 
@@ -50,6 +62,12 @@ exports.getChannelVideos = (channelId, pageToken, date) => {
     method: 'GET',
   })
   .then((res) => {
+    if (res.error) {
+      console.log(res.error);
+    }
     return res.json();
+  })
+  .catch((err) => {
+    console.log(err);
   });
 };

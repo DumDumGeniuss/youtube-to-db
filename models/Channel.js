@@ -33,6 +33,10 @@ const model = mongoose.model('Channel', {
     type: String,
     required: true,
   },
+  bannerTvImageUrl: {
+    type: String,
+    required: true,
+  },
   viewCount: {
     type: Number,
     required: true,
