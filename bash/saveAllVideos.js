@@ -57,7 +57,9 @@ async function saveAllVideosInfo(targetId, onlyToday) {
 		const videos = await getAllVideos(videoIds);
 		const finalVideos = [];
 		videos.forEach((video) => {
-			finalVideos.push(tinyHelper.encryptVideoInfo(video));
+      if (video) {
+        finalVideos.push(tinyHelper.encryptVideoInfo(video));
+      }
 		});
 
     console.log(finalVideos.length);
