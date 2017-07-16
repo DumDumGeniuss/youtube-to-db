@@ -4,8 +4,8 @@ const saveChannels = require('../bash/saveChannels');
 const saveChannelStatistics = require('../bash/saveChannelStatistics');
 const config = require('../config.js');
 
-const job1 = new cron.CronJob({
-  cronTime: '30 * * * *',
+const getChannelsHourly = new cron.CronJob({
+  cronTime: config.getChannelsHourlyCronjob,
   onTick: function() {
     console.log('get Channels');
     saveChannels();
@@ -14,8 +14,8 @@ const job1 = new cron.CronJob({
   timeZone: 'Asia/Taipei'
 });
 
-const job2 = new cron.CronJob({
-  cronTime: '00 * * * *',
+const getVideosHourly = new cron.CronJob({
+  cronTime: config.getVideosHourlyCronjob,
   onTick: function() {
     console.log('get Videos hourly');
     saveAllVideos(false, true);
@@ -24,8 +24,8 @@ const job2 = new cron.CronJob({
   timeZone: 'Asia/Taipei'
 });
 
-const job3 = new cron.CronJob({
-  cronTime: '00 00 * * *',
+const getVideosDaily = new cron.CronJob({
+  cronTime: config.getVideosDailyCronjob,
   onTick: function() {
     console.log('get Videos daily');
     saveAllVideos(false, false);
@@ -34,10 +34,10 @@ const job3 = new cron.CronJob({
   timeZone: 'Asia/Taipei'
 });
 
-const job4 = new cron.CronJob({
-  cronTime: '00 02 * * *',
+const saveChannelStatisticsDaily = new cron.CronJob({
+  cronTime: config.saveChannelStatisticsDailyCronjob,
   onTick: function() {
-    console.log('get Channel Statistics daily');
+    console.log('save Channel Statistics daily');
     saveChannelStatistics();
   },
   start: false,
@@ -45,7 +45,7 @@ const job4 = new cron.CronJob({
 });
 
 
-job1.start();
-job2.start();
-job3.start();
-job4.start();
+getChannelsHourly.start();
+getVideosHourly.start();
+getVideosDaily.start();
+saveChannelStatisticsDaily.start();
