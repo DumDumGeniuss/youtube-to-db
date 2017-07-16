@@ -24,7 +24,7 @@ async function saveChannelStatistics() {
       const newStatistic = {
         channelId: item.id,
         date: dateString,
-        createAt: dateNow,
+        createdAt: dateNow,
         viewCount: item.viewCount,
         commentCount: item.viewCount,
         subscriberCount: item.viewCount,
