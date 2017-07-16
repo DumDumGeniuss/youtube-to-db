@@ -1,7 +1,7 @@
 const tinyHelper = require('../libs/tinyHelper');
 const mongoHelper = require('../libs/mongoHelper');
 const ChannelStatisticModel = require('../models/ChannelStatistic');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 async function saveChannelStatistics(timeZone) {
   try {
