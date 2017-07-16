@@ -3,13 +3,13 @@ const mongoHelper = require('../libs/mongoHelper');
 const ChannelStatisticModel = require('../models/ChannelStatistic');
 const moment = require('moment');
 
-async function saveChannelStatistics() {
+async function saveChannelStatistics(timeZone) {
   try {
 
     const dateNow = new Date();
 
     /* Generate date format */
-    const dateString = moment(dateNow).format('YYYY-MM-DD');
+    const dateString = moment(dateNow).tz(timeZone || 'Asia/Taipei').format('YYYY-MM-DD');
     console.log(dateString);
 
     /* Wait for mongodb connection */

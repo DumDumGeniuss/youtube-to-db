@@ -38,7 +38,7 @@ const saveChannelStatisticsDaily = new cron.CronJob({
   cronTime: config.saveChannelStatisticsDailyCronjob,
   onTick: function() {
     console.log('save Channel Statistics daily');
-    saveChannelStatistics();
+    saveChannelStatistics('Asia/Taipei');
   },
   start: false,
   timeZone: 'Asia/Taipei'
