@@ -2,6 +2,7 @@ const cron = require('cron');
 const saveAllVideos = require('../bash/saveAllVideos');
 const saveChannels = require('../bash/saveChannels');
 const saveChannelStatistics = require('../bash/saveChannelStatistics');
+const config = require('../config.js');
 
 const job1 = new cron.CronJob({
   cronTime: '30 * * * *',
@@ -34,7 +35,7 @@ const job3 = new cron.CronJob({
 });
 
 const job4 = new cron.CronJob({
-  cronTime: '00 01 * * *',
+  cronTime: '00 02 * * *',
   onTick: function() {
     console.log('get Channel Statistics daily');
     saveChannelStatistics();
