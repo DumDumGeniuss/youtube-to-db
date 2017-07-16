@@ -26,9 +26,9 @@ async function saveChannelStatistics() {
         date: dateString,
         createdAt: dateNow,
         viewCount: item.viewCount,
-        commentCount: item.viewCount,
-        subscriberCount: item.viewCount,
-        videoCount: item.viewCount,
+        commentCount: item.commentCount,
+        subscriberCount: item.subscriberCount,
+        videoCount: item.videoCount,
       };
       /* If today's data already exists, skip it */
       const oldStatistic = await ChannelStatisticModel.find({ channelId: newStatistic.channelId, date: newStatistic.date });
