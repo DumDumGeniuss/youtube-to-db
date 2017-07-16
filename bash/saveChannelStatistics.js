@@ -9,7 +9,8 @@ async function saveChannelStatistics() {
     const dateNow = new Date();
 
     /* Generate date format */
-    const dateString = moment(dateNow).utc().format('YYYY-MM-DD');
+    const dateString = moment(dateNow).format('YYYY-MM-DD');
+    console.log(dateString);
 
     /* Wait for mongodb connection */
     const mongoConnection = await mongoHelper.getConnection();
