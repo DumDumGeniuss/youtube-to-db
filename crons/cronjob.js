@@ -1,6 +1,7 @@
 const cron = require('cron');
 const saveAllVideos = require('../bash/saveAllVideos');
 const saveChannels = require('../bash/saveChannels');
+const saveChannelStatistics = require('../bash/saveChannelStatistics');
 
 const job1 = new cron.CronJob({
   cronTime: '30 * * * *',
@@ -32,7 +33,18 @@ const job3 = new cron.CronJob({
   timeZone: 'Asia/Taipei'
 });
 
+const job4 = new cron.CronJob({
+  cronTime: '00 01 * * *',
+  onTick: function() {
+    console.log('get Channel Statistics daily');
+    saveChannelStatistics();
+  },
+  start: false,
+  timeZone: 'Asia/Taipei'
+});
+
 
 job1.start();
 job2.start();
 job3.start();
+job4.start();

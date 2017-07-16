@@ -2,6 +2,7 @@ const config = require('../config');
 const mongoose = require('mongoose');
 const ChannelModel = require('../models/Channel');
 const VideoModel = require('../models/Video');
+const ChannelStatisticModel = require('../models/ChannelStatistic');
 
 mongoose.Promise = global.Promise;
 
@@ -23,9 +24,24 @@ exports.getChannelIds = async function () {
   return channelIds;
 };
 
+exports.getChannelStatistics = async function () {
+  const channels = await ChannelModel.find({}, 'viewCount commentCount subscriberCount videoCount');
+
+  return channels;
+};
+
 exports.saveChannel = async function (channel) {
   /* Update if exsist, create if not exist */
   await ChannelModel.update({_id: channel._id}, channel, {upsert: true});
+  return 'ok';
+};
+
+exports.saveChannelStatistic = async function (channelStatistic) {
+  /* Update if exsist, create if not exist */
+  await ChannelStatisticModel.update({
+      channelId: channelStatistic.channelId,
+      date: channelStatistic.date
+    }, channelStatistic, {upsert: true});
   return 'ok';
 };
 
