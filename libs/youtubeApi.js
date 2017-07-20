@@ -35,6 +35,7 @@ exports.getVideos = (ids) => {
   idParam = encodeURIComponent(ids.toString());
   queryString = `?part=statistics,snippet,contentDetails&id=${idParam}&key=${apiKey}`;
 
+  // console.log('call videos Api, quota 7');
   return fetch(youtubeApi + 'videos' + queryString, {
     method: 'GET',
   })
@@ -53,11 +54,13 @@ exports.getVideos = (ids) => {
 };
 
 /* Get all videos from on channel */
-exports.getChannelVideos = (channelId, pageToken, date) => {
+exports.getChannelVideos = (channelId, pageToken, date, sort) => {
   let queryString;
+  let querySort = sort || 'date';
   let queryDate = date || '1970-01-01T00:00:00Z';
-  queryString = `?part=snippet&type=video&channelId=${channelId}&key=${apiKey}&maxResults=50&order=date&pageToken=${pageToken}&publishedAfter=${queryDate}`;
+  queryString = `?part=snippet&type=video&channelId=${channelId}&key=${apiKey}&maxResults=50&order=${querySort}&pageToken=${pageToken}&publishedAfter=${queryDate}`;
 
+  // console.log('call search Api, quota 100');
   return fetch(youtubeApi + 'search' + queryString, {
     method: 'GET',
   })

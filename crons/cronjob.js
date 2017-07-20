@@ -18,7 +18,7 @@ const getVideosHourly = new cron.CronJob({
   cronTime: config.getVideosHourlyCronjob,
   onTick: function() {
     console.log('get Videos hourly');
-    saveAllVideos(false, true);
+    saveAllVideos(false, true, 'date');
   },
   start: false,
   timeZone: 'Asia/Taipei'
@@ -27,8 +27,8 @@ const getVideosHourly = new cron.CronJob({
 const getVideosDaily = new cron.CronJob({
   cronTime: config.getVideosDailyCronjob,
   onTick: function() {
-    console.log('get Videos daily');
-    saveAllVideos(false, false);
+    console.log('get Videos monthly');
+    saveAllVideos(false, false, 'viewCount');
   },
   start: false,
   timeZone: 'Asia/Taipei'

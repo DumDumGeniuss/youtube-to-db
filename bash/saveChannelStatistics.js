@@ -33,6 +33,7 @@ async function saveChannelStatistics(timeZone) {
       };
       /* If today's data already exists, skip it */
       const oldStatistic = await ChannelStatisticModel.find({ channelId: newStatistic.channelId, date: newStatistic.date });
+      console.log(oldStatistic);
       if (oldStatistic.length === 0) {
         await mongoHelper.saveChannelStatistic(newStatistic);
       }
