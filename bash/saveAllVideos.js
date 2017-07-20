@@ -46,40 +46,42 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
   const startDate = onlyThisMonth? moment(new Date()).utc().add(-1, 'months').format() : null;
 
   /* For test */
-  // channelIds = ['UCIdhd_1spj49unBWx1fjS2A'];
+  // channelIds = ['UC9RyS1FHuKR5C1A0vC6F55w'];
 
-  /* Because each channel has lots of videos, so we separate it */
-	channelIds.forEach(async function (channelId) {
-		const channelVideos = await getAllChannelVideos(channelId, startDate, sort || 'date');
-		const videoIds = [];
-		const channelVideosMap = {};
+  const videoIds = [];
+
+  /* Use all channelIds to get all videos of those channelIds */
+  for (let channelId of channelIds) {
+		const channelVideos = await getAllChannelVideos(channelId, startDate, sort);
 		channelVideos.forEach((item) => {
 			videoIds.push(item.id.videoId);
 		});
+  }
 
-		/* We get all videos from channel, but still want their statistics */
-		const videos = await getAllVideos(videoIds);
-		const finalVideos = [];
-		videos.forEach((video) => {
-      if (video) {
-        finalVideos.push(tinyHelper.encryptVideoInfo(video));
-      }
-		});
+  console.log('total videos:' + videoIds.length);
 
-    console.log(finalVideos.length);
-    // console.log(finalVideos);
-
-    /* Use this index to check if all the promises done */
-    let checkSaveEndIndex = 0;
-    const finalVideosSize = finalVideos.length;
-    finalVideos.forEach(async function (video) {
-      await mongoHelper.saveVideo(video);
-      checkSaveEndIndex += 1;
-      if (checkSaveEndIndex === finalVideosSize) {
-        mongoConnection.close();
-      }
-    });
+	/* We get all videos from channel, but still want their statistics */
+	const videos = await getAllVideos(videoIds);
+	const finalVideos = [];
+	videos.forEach((video) => {
+    if (video) {
+      finalVideos.push(tinyHelper.encryptVideoInfo(video));
+    }
 	});
+
+  // console.log(finalVideos.length);
+  // console.log(finalVideos);
+
+  /* Use this index to check if all the promises done */
+  let checkSaveEndIndex = 0;
+  const finalVideosSize = finalVideos.length;
+  finalVideos.forEach(async function (video) {
+    await mongoHelper.saveVideo(video);
+    checkSaveEndIndex += 1;
+    if (checkSaveEndIndex === finalVideosSize) {
+      mongoConnection.close();
+    }
+  });
 }
 
 module.exports = saveAllVideosInfo;
