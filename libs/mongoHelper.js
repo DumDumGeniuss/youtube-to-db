@@ -15,8 +15,8 @@ exports.getConnection = function () {
   });
 };
 
-exports.getChannelIds = async function () {
-  const channels = await ChannelModel.find({});
+exports.getChannelIds = async function (count) {
+  const channels = await ChannelModel.find({}).limit(count || 99999);
   const channelIds = [];
   channels.forEach((channel) => {
     channelIds.push(channel._id);

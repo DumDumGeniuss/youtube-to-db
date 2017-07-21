@@ -2,6 +2,7 @@ const cron = require('cron');
 const saveAllVideos = require('../bash/saveAllVideos');
 const saveChannels = require('../bash/saveChannels');
 const saveChannelStatistics = require('../bash/saveChannelStatistics');
+const saveChannelPageInfos = require('../bash/saveChannelPageInfos');
 const config = require('../config.js');
 
 const getChannelsHourly = new cron.CronJob({
@@ -44,8 +45,19 @@ const saveChannelStatisticsDaily = new cron.CronJob({
   timeZone: 'Asia/Taipei'
 });
 
+const saveChannelPageInfosDaily = new cron.CronJob({
+  cronTime: config.saveChannelPageInfosDailyCronjob,
+  onTick: function() {
+    console.log('save Channel Page Infos daily');
+    saveChannelPageInfos('Asia/Taipei');
+  },
+  start: false,
+  timeZone: 'Asia/Taipei'
+});
+
 
 getChannelsHourly.start();
 getNewVideos.start();
 getPopularVideos.start();
 saveChannelStatisticsDaily.start();
+saveChannelPageInfosDaily.start();

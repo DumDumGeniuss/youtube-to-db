@@ -13,6 +13,12 @@ const model = mongoose.model('Channel', {
     type: String,
     required: true,
   },
+  country: {
+    type: String,
+  },
+  socialInfos: {
+    type: Array,
+  },
   description: {
     type: String,
     required: true,
