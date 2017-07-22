@@ -20,14 +20,19 @@ async function getAllChannelVideos(channelId, date, sort) {
 }
 
 /* Enter an array of video ids, and get all of then from youtube  */
-async function getAllVideos(ids) {
-	const splittedIds = tinyHelper.splitArray(ids, 50);
-	let videos = [];
-	for (let i = 0; i < splittedIds.length; i++) {
-		const nextVideos = await youtubeApi.getVideos(splittedIds[i]);
-		videos = videos.concat(nextVideos);	
-	}
-	return videos;
+async function getAllVideos(videoIds) {
+	const manyVideoIds = tinyHelper.splitArray(videoIds, 50);
+	let resVideos = [];
+  let getVideosPromises = [];
+  manyVideoIds.forEach((ids) => {
+    getVideosPromises.push(youtubeApi.getVideos(ids));
+  });
+  let resFromGetVideosPromises = await Promise.all(getVideosPromises);
+  resFromGetVideosPromises.forEach((videos) => {
+    resVideos = resVideos.concat(videos);
+  });
+
+  return resVideos;
 }
 
 async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
