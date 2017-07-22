@@ -31,57 +31,71 @@ async function getAllVideos(ids) {
 }
 
 async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
-  /* Wait for mongodb connection */
-  const mongoConnection = await mongoHelper.getConnection();
 
-  let channelIds;
-
-  if (targetId) {
-    channelIds = [targetId];
-  } else {
-    channelIds = await mongoHelper.getChannelIds();
-  }
-
-  /* Find all videos after a date */
-  const startDate = onlyThisMonth? moment(new Date()).utc().add(-1, 'months').format() : null;
-
-  /* For test */
-  // channelIds = ['UC9RyS1FHuKR5C1A0vC6F55w'];
-
-  const videoIds = [];
-
-  /* Use all channelIds to get all videos of those channelIds */
-  for (let channelId of channelIds) {
-		const channelVideos = await getAllChannelVideos(channelId, startDate, sort);
-		channelVideos.forEach((item) => {
-			videoIds.push(item.id.videoId);
-		});
-  }
-
-  console.log('total videos:' + videoIds.length);
-
-	/* We get all videos from channel, but still want their statistics */
-	const videos = await getAllVideos(videoIds);
-	const finalVideos = [];
-	videos.forEach((video) => {
-    if (video) {
-      finalVideos.push(tinyHelper.encryptVideoInfo(video));
+  try {
+    /* Wait for mongodb connection */
+    const mongoConnection = await mongoHelper.getConnection();
+  
+    let channelIds;
+  
+    if (targetId) {
+      channelIds = [targetId];
+    } else {
+      channelIds = await mongoHelper.getChannelIds();
     }
-	});
+  
+    /* Find all videos after a date */
+    const startDate = onlyThisMonth? moment(new Date()).utc().add(-1, 'months').format() : null;
+  
+    /* For test */
+    // channelIds = ['UC9RyS1FHuKR5C1A0vC6F55w'];
+  
+    const getAllVideosPromises = [];
+    const videoIds = [];
+  
+    /* Use all channelIds to get all videos of those channelIds */
+    channelIds.forEach((channelId) => {
+      getAllVideosPromises.push(getAllChannelVideos(channelId, startDate, sort));
+    });
 
-  // console.log(finalVideos.length);
-  // console.log(finalVideos);
+    const resFromGetAllVideosPromises = await Promise.all(getAllVideosPromises);
 
-  /* Use this index to check if all the promises done */
-  let checkSaveEndIndex = 0;
-  const finalVideosSize = finalVideos.length;
-  finalVideos.forEach(async function (video) {
-    await mongoHelper.saveVideo(video);
-    checkSaveEndIndex += 1;
-    if (checkSaveEndIndex === finalVideosSize) {
-      mongoConnection.close();
-    }
-  });
+    resFromGetAllVideosPromises.forEach((channelVideos) => {
+      channelVideos.forEach((item) => {
+        if (item) {
+          videoIds.push(item.id.videoId);
+        }
+      });
+    });
+  
+    console.log('total videos:' + videoIds.length);
+  
+    /* We get all videos from channel, but still want their statistics */
+    const videos = await getAllVideos(videoIds);
+    const finalVideos = [];
+    videos.forEach((video) => {
+      if (video) {
+        finalVideos.push(tinyHelper.encryptVideoInfo(video));
+      }
+    });
+    // console.log(videoIds);
+  
+    // console.log(finalVideos.length);
+    // console.log(finalVideos);
+  
+    /* Use this index to check if all the promises done */
+    let checkSaveEndIndex = 0;
+    const finalVideosSize = finalVideos.length;
+    finalVideos.forEach(async function (video) {
+      await mongoHelper.saveVideo(video);
+      checkSaveEndIndex += 1;
+      if (checkSaveEndIndex === finalVideosSize) {
+        mongoConnection.close();
+      }
+    });
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 module.exports = saveAllVideosInfo;
