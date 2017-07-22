@@ -21,21 +21,32 @@ exports.getInfoFromChannelAboutPage = (channelId) => {
   })
   .then((result) => {
     $ = cheerio.load(result);
+    /* Get country */
     const countrySpan = $('span[class="country-inline"]')[0];
     const country = countrySpan ? countrySpan.children[0].data.replace(/[\n\s]/g, '') : null;
+
+    /* Get social links, and there might be duplicated ones */
     const socialLinkLis = $('li[class="channel-links-item"]');
     const socialLinkLisSize = socialLinkLis.length;
     const socialInfos = [];
+    const socialInfoRepeatCheck = {};
 
     for (let i = 0; i < socialLinkLisSize; i++) {
       const aTag = socialLinkLis[i].children[1];
       const imgTag = aTag ? aTag.children[1] : null;
-      const socialInfo = {
-        title: aTag ? aTag.attribs.title : null,
-        href: aTag ? aTag.attribs.href : null,
-        img: imgTag ? 'https:' + imgTag.attribs.src : null,
-      };
-      socialInfos.push(socialInfo);
+      const title = aTag ? aTag.attribs.title : null;
+      const href = aTag ? aTag.attribs.href : null;
+      const img = imgTag ? 'https:' + imgTag.attribs.src : null;
+      /* If no previous socialInfo with same href, add it to the array */
+      if (!socialInfoRepeatCheck[href]) {
+        const socialInfo = {
+          title,
+          href,
+          img,
+        };
+        socialInfos.push(socialInfo);
+        socialInfoRepeatCheck[href] = true;
+      }
     }
     return {
       country,
