@@ -53,7 +53,7 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     if (targetId) {
       channelIds = [targetId];
     } else {
-      channelIds = await mongoHelper.getChannelIds(1);
+      channelIds = await mongoHelper.getChannelIds();
     }
   
     /* Find all videos after a date */
