@@ -107,6 +107,35 @@ exports.getVideos = (ids) => {
   });
 };
 
+/* Get all targeted videoCategories*/
+exports.getVideoCategories = () => {
+  let idParam = '';
+  let queryString;
+  let ids = [];
+  for (let i = 1; i <= 50; i++) {
+    ids.push(i);
+  }
+  idParam = encodeURIComponent(ids.toString());
+  queryString = `?part=snippet&id=${idParam}&key=${apiKey}`;
+
+  // console.log('call videos Api, quota 7');
+  return fetch(youtubeApi + 'videoCategories' + queryString, {
+    method: 'GET',
+  })
+  .then((res) => {
+    return res.json();
+  })
+  .then((res) => {
+    if (res.error) {
+      console.log(res.error);
+    }
+    return res.items;
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+};
+
 /* Get all videos from on channel */
 exports.getChannelVideos = (channelId, pageToken, date, sort) => {
   let queryString;

@@ -25,6 +25,14 @@ const model = mongoose.model('Video', {
     type: String,
     required: true,
   },
+  categoryId: {
+    type: String,
+    required: true,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     required: true,

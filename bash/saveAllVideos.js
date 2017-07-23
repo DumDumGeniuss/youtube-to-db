@@ -40,13 +40,20 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
   try {
     /* Wait for mongodb connection */
     const mongoConnection = await mongoHelper.getConnection();
+
+    /* Get video categories from youtube */
+    const videoCategories = await youtubeApi.getVideoCategories();
+    const videoCategoriesMap = {};
+    videoCategories.forEach((videoCategorie) => {
+      videoCategoriesMap[videoCategorie.id] = videoCategorie.snippet.title;
+    });
   
     let channelIds;
   
     if (targetId) {
       channelIds = [targetId];
     } else {
-      channelIds = await mongoHelper.getChannelIds();
+      channelIds = await mongoHelper.getChannelIds(1);
     }
   
     /* Find all videos after a date */
@@ -80,7 +87,9 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     const finalVideos = [];
     videos.forEach((video) => {
       if (video) {
-        finalVideos.push(tinyHelper.encryptVideoInfo(video));
+        const newVideo = tinyHelper.encryptVideoInfo(video);
+        newVideo.category = videoCategoriesMap[newVideo.categoryId];
+        finalVideos.push(newVideo);
       }
     });
     // console.log(videoIds);

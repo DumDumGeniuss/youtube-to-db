@@ -40,6 +40,7 @@ exports.encryptVideoInfo = function (video) {
 		  publishedAt: video.snippet.publishedAt,
 		  channelTitle: video.snippet.channelTitle,
 		  channelId: video.snippet.channelId,
+      categoryId: video.snippet.categoryId,
 		  title: video.snippet.title,
 		  description: video.snippet.description,
     	defaultThumbnails: video.snippet.thumbnails.default.url,
