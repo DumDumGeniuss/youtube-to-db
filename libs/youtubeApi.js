@@ -2,6 +2,7 @@ require('es6-promise').polyfill();
 const fetch = require('isomorphic-fetch');
 const config = require('../config.js');
 const cheerio = require('cheerio');
+const tinyHelper = require('../libs/tinyHelper');
 
 const youtubeApi = 'https://www.googleapis.com/youtube/v3/';
 
@@ -83,7 +84,7 @@ exports.getChannels = (ids) => {
 };
 
 /* Get all targeted videos*/
-exports.getVideos = (ids) => {
+const getVideos = (ids) => {
   let idParam = '';
   let queryString;
   idParam = encodeURIComponent(ids.toString());
@@ -106,9 +107,28 @@ exports.getVideos = (ids) => {
     console.log(err);
   });
 };
+exports.getVideos = getVideos;
+
+/* Enter an array of video ids, and get all of then from youtube  */
+const getAllVideos = async function (videoIds) {
+  const manyVideoIds = tinyHelper.splitArray(videoIds, 50);
+  let resVideos = [];
+  let getVideosPromises = [];
+  manyVideoIds.forEach((ids) => {
+    getVideosPromises.push(getVideos(ids));
+  });
+  let resFromGetVideosPromises = await Promise.all(getVideosPromises);
+  resFromGetVideosPromises.forEach((videos) => {
+    resVideos = resVideos.concat(videos);
+  });
+
+  return resVideos;
+};
+exports.getAllVideos = getAllVideos;
+
 
 /* Get all targeted videoCategories*/
-exports.getVideoCategories = () => {
+const getVideoCategories = () => {
   let idParam = '';
   let queryString;
   let ids = [];
@@ -135,9 +155,11 @@ exports.getVideoCategories = () => {
     console.log(err);
   });
 };
+exports.getVideoCategories = getVideoCategories;
+
 
 /* Get all videos from on channel */
-exports.getChannelVideos = (channelId, pageToken, date, sort) => {
+const getChannelVideos = (channelId, pageToken, date, sort) => {
   let queryString;
   let querySort = sort || 'date';
   let queryDate = date || '1970-01-01T00:00:00Z';
@@ -157,3 +179,21 @@ exports.getChannelVideos = (channelId, pageToken, date, sort) => {
     console.log(err);
   });
 };
+exports.getChannelVideos = getChannelVideos;
+
+/* get all videos from a channel, but it may contains lots of videos, so we may query lots of times */
+const getAllChannelVideos = async function (channelId, date, sort) {
+  let videos = [];
+  let nextToken;
+  const result = await getChannelVideos(channelId, '', date, sort);
+  nextToken = result.nextPageToken;
+  videos = videos.concat(result.items);
+  /* We just get the firt 50 results */
+  // while (nextToken) {
+  //  let nextResult = await youtubeApi.getChannelVideos(channelId, nextToken, date, sort);
+  //  nextToken = nextResult.nextPageToken;
+  //  videos = videos.concat(nextResult.items);
+  // }
+  return videos;
+};
+exports.getAllChannelVideos = getAllChannelVideos;

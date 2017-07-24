@@ -3,38 +3,6 @@ const tinyHelper = require('../libs/tinyHelper');
 const mongoHelper = require('../libs/mongoHelper');
 const moment = require('moment');
 
-/* get all videos from a channel, but it may contains lots of videos, so we may query lots of times */
-async function getAllChannelVideos(channelId, date, sort) {
-	let videos = [];
-	let nextToken;
-	const result = await youtubeApi.getChannelVideos(channelId, '', date, sort);
-	nextToken = result.nextPageToken;
-	videos = videos.concat(result.items);
-  /* We just get the firt 50 results */
-	// while (nextToken) {
-	// 	let nextResult = await youtubeApi.getChannelVideos(channelId, nextToken, date, sort);
-	// 	nextToken = nextResult.nextPageToken;
-	// 	videos = videos.concat(nextResult.items);
-	// }
-	return videos;
-}
-
-/* Enter an array of video ids, and get all of then from youtube  */
-async function getAllVideos(videoIds) {
-	const manyVideoIds = tinyHelper.splitArray(videoIds, 50);
-	let resVideos = [];
-  let getVideosPromises = [];
-  manyVideoIds.forEach((ids) => {
-    getVideosPromises.push(youtubeApi.getVideos(ids));
-  });
-  let resFromGetVideosPromises = await Promise.all(getVideosPromises);
-  resFromGetVideosPromises.forEach((videos) => {
-    resVideos = resVideos.concat(videos);
-  });
-
-  return resVideos;
-}
-
 async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
 
   try {
@@ -53,7 +21,7 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     if (targetId) {
       channelIds = [targetId];
     } else {
-      channelIds = await mongoHelper.getChannelIds();
+      channelIds = await mongoHelper.getChannelIds(2);
     }
   
     /* Find all videos after a date */
@@ -67,7 +35,7 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
   
     /* Use all channelIds to get all videos of those channelIds */
     channelIds.forEach((channelId) => {
-      getAllVideosPromises.push(getAllChannelVideos(channelId, startDate, sort));
+      getAllVideosPromises.push(youtubeApi.getAllChannelVideos(channelId, startDate, sort));
     });
 
     const resFromGetAllVideosPromises = await Promise.all(getAllVideosPromises);
@@ -83,7 +51,7 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     console.log('total videos:' + videoIds.length);
   
     /* We get all videos from channel, but still want their statistics */
-    const videos = await getAllVideos(videoIds);
+    const videos = await youtubeApi.getAllVideos(videoIds);
     const finalVideos = [];
     videos.forEach((video) => {
       if (video) {
