@@ -34,15 +34,13 @@ async function saveChannelsInfo() {
     });
   
     /* Use this index to check if all the promises done */
-    let checkSaveEndIndex = 0;
-    const channelsSize = channels.length;
+    const saveChannelPromises = [];
     channels.forEach(async function (channel) {
-      await mongoHelper.saveChannel(channel);
-      checkSaveEndIndex += 1;
-      if (checkSaveEndIndex === channelsSize) {
-        mongoConnection.close();
-      }
+      channels.push(mongoHelper.saveChannel(channel));
     });
+    await Promise.all(channels);
+    mongoConnection.close();
+    return 'ok';
   } catch (e) {
     console.log(e);
   }

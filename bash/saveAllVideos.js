@@ -66,7 +66,6 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     // console.log(finalVideos);
   
     /* Use this index to check if all the promises done */
-    let checkSaveEndIndex = 0;
     const saveFinalVideoPromises = [];
     finalVideos.forEach((finalVideo) => {
       saveFinalVideoPromises.push(mongoHelper.saveVideo(finalVideo));
