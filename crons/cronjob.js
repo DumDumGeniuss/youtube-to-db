@@ -19,7 +19,7 @@ const getAllVideos = new cron.CronJob({
   cronTime: config.getAllVideosCronjob,
   onTick: async function() {
     console.log('get new Videos');
-    await saveAllVideos(false, true, 'date');
+    await saveAllVideos(false, false, 'date');
     console.log('get popular Videos');
     await saveAllVideos(false, false, 'viewCount');
     console.log('Finish getting videos');
