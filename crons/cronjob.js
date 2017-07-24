@@ -15,21 +15,15 @@ const getChannelsHourly = new cron.CronJob({
   timeZone: 'Asia/Taipei'
 });
 
-const getNewVideos = new cron.CronJob({
-  cronTime: config.getNewVideosCronjob,
-  onTick: function() {
-    console.log('get Videos hourly');
-    saveAllVideos(false, true, 'date');
-  },
-  start: false,
-  timeZone: 'Asia/Taipei'
-});
-
-const getPopularVideos = new cron.CronJob({
-  cronTime: config.getPopularVideosCronjob,
-  onTick: function() {
-    console.log('get Videos monthly');
-    saveAllVideos(false, false, 'viewCount');
+const getAllVideos = new cron.CronJob({
+  cronTime: config.getAllVideosCronjob,
+  onTick: async function() {
+    console.log('get new Videos');
+    await saveAllVideos(false, true, 'date');
+    console.log('get popular Videos');
+    await saveAllVideos(false, false, 'viewCount');
+    console.log('Finish getting videos');
+    return;
   },
   start: false,
   timeZone: 'Asia/Taipei'
@@ -57,7 +51,6 @@ const saveChannelPageInfosDaily = new cron.CronJob({
 
 
 getChannelsHourly.start();
-getNewVideos.start();
-getPopularVideos.start();
+getAllVideos.start();
 saveChannelStatisticsDaily.start();
 saveChannelPageInfosDaily.start();

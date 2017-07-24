@@ -21,7 +21,7 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     if (targetId) {
       channelIds = [targetId];
     } else {
-      channelIds = await mongoHelper.getChannelIds(2);
+      channelIds = await mongoHelper.getChannelIds();
     }
   
     /* Find all videos after a date */
@@ -67,14 +67,15 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
   
     /* Use this index to check if all the promises done */
     let checkSaveEndIndex = 0;
-    const finalVideosSize = finalVideos.length;
-    finalVideos.forEach(async function (video) {
-      await mongoHelper.saveVideo(video);
-      checkSaveEndIndex += 1;
-      if (checkSaveEndIndex === finalVideosSize) {
-        mongoConnection.close();
-      }
+    const saveFinalVideoPromises = [];
+    finalVideos.forEach((finalVideo) => {
+      saveFinalVideoPromises.push(mongoHelper.saveVideo(finalVideo));
     });
+    await Promise.all(saveFinalVideoPromises);
+    mongoConnection.close();
+    
+    return 'ok';
+
   } catch (e) {
     console.log(e);
   }
