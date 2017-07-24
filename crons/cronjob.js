@@ -17,8 +17,8 @@ const getChannelsHourly = new cron.CronJob({
   timeZone: 'Asia/Taipei'
 });
 
-const determineChannelCategories = new cron.CronJob({
-  cronTime: config.determineChannelCategoriesCronjob,
+const determineChannelCategoriesJob = new cron.CronJob({
+  cronTime: config.determineChannelCategoriesJobSchedule,
   onTick: function() {
     console.log('determine all channel categories');
     determineChannelCategories();
@@ -74,7 +74,7 @@ const saveChannelPageInfosDaily = new cron.CronJob({
 
 getChannelsHourly.start();
 getAllCategories.start();
-determineChannelCategories.start();
+determineChannelCategoriesJob.start();
 getAllVideos.start();
 saveChannelStatisticsDaily.start();
 saveChannelPageInfosDaily.start();
