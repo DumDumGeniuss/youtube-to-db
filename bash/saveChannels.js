@@ -1,6 +1,5 @@
 const youtubeApi = require('../libs/youtubeApi');
 const config = require('../config');
-const ChannelModel = require('../models/Channel');
 const tinyHelper = require('../libs/tinyHelper');
 const mongoHelper = require('../libs/mongoHelper');
 

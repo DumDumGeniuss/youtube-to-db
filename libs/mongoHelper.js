@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const ChannelModel = require('../models/Channel');
 const VideoModel = require('../models/Video');
 const ChannelStatisticModel = require('../models/ChannelStatistic');
+const CategoryModel = require('../models/Category');
 
 mongoose.Promise = global.Promise;
 
@@ -22,6 +23,32 @@ exports.getChannelIds = async function (count) {
     channelIds.push(channel._id);
   });
   return channelIds;
+};
+
+exports.getVideos = async function (channelId, sort, count, order) {
+  const videos = await VideoModel.find({channelId: channelId}).sort({ [sort]: order || 'desc' }).limit(count || 50);
+  return videos;
+};
+
+exports.getVideoCategories = async function () {
+  const videoCategories = await VideoModel.find({}).distinct('category');
+  return videoCategories;
+};
+
+exports.getChannelCategories = async function () {
+  const channelCategories = await ChannelModel.find({}).distinct('category');
+  return channelCategories;
+};
+
+exports.getChannelCountries = async function () {
+  const channelCountries = await ChannelModel.find({}).distinct('country');
+  return channelCountries;
+};
+
+exports.saveCategories = async function (category) {
+  /* Update if exsist, create if not exist */
+  await CategoryModel.update({_id: category._id}, category, {upsert: true});
+  return 'ok';
 };
 
 exports.getChannelStatistics = async function () {

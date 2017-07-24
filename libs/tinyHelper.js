@@ -14,6 +14,23 @@ exports.splitArray = function (array, count) {
   return final;
 };
 
+exports.getMostFrequentParams = function (objects, param) {
+  const valueShowCountMap = {};
+  let currentHighCount = 0;
+  let currentHighValue = null;
+  objects.forEach((object) => {
+    let value = object[param];
+    let count = (valueShowCountMap[value] || 0) + 1;
+    valueShowCountMap[value] = count;
+
+    if (count >= currentHighCount) {
+      currentHighCount = count;
+      currentHighValue = value;
+    }
+  });
+  return currentHighValue;
+};
+
 exports.encryptChannelInfo = function (item) {
   return {
     etag: item.etag,
