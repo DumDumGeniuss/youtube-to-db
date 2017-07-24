@@ -7,11 +7,14 @@ const saveAllCategories = require('../bash/saveAllCategories');
 const determineChannelCategories = require('../bash/determineChannelCategories');
 const config = require('../config.js');
 
-const getChannelsHourly = new cron.CronJob({
-  cronTime: config.getChannelsHourlyCronjob,
-  onTick: function() {
-    console.log('get Channels');
-    saveChannels();
+const saveChannelsJob = new cron.CronJob({
+  cronTime: config.saveChannelsJobSchedule,
+  onTick: async function() {
+    console.log('get Channels from youtube');
+    await saveChannels();
+    console.log('save channel statistics');
+    await saveChannelStatistics();
+    return;
   },
   start: false,
   timeZone: 'Asia/Taipei'
@@ -44,18 +47,7 @@ const getAllVideos = new cron.CronJob({
     await saveAllVideos(false, false, 'date');
     console.log('get popular Videos');
     await saveAllVideos(false, false, 'viewCount');
-    console.log('Finish getting videos');
     return;
-  },
-  start: false,
-  timeZone: 'Asia/Taipei'
-});
-
-const saveChannelStatisticsDaily = new cron.CronJob({
-  cronTime: config.saveChannelStatisticsDailyCronjob,
-  onTick: function() {
-    console.log('save Channel Statistics daily');
-    saveChannelStatistics('Asia/Taipei');
   },
   start: false,
   timeZone: 'Asia/Taipei'
@@ -72,9 +64,8 @@ const saveChannelPageInfosDaily = new cron.CronJob({
 });
 
 
-getChannelsHourly.start();
+saveChannelsJob.start();
 getAllCategories.start();
 determineChannelCategoriesJob.start();
 getAllVideos.start();
-saveChannelStatisticsDaily.start();
 saveChannelPageInfosDaily.start();

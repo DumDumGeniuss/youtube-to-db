@@ -9,10 +9,6 @@ const model = mongoose.model('Video', {
     type: String,
     required: true,
   },
-  etag: {
-    type: String,
-    required: true,
-  },
   publishedAt: {
     type: Date,
     required: true,

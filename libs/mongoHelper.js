@@ -51,8 +51,8 @@ exports.saveCategories = async function (category) {
   return 'ok';
 };
 
-exports.getChannelStatistics = async function () {
-  const channels = await ChannelModel.find({}, 'viewCount commentCount subscriberCount videoCount');
+exports.getStatisticsFromChannel = async function (count) {
+  const channels = await ChannelModel.find({}, 'viewCount commentCount subscriberCount videoCount').limit(count || 99999);
 
   return channels;
 };
@@ -62,6 +62,18 @@ exports.saveChannel = async function (channel) {
   await ChannelModel.update({_id: channel._id}, channel, {upsert: true});
   return 'ok';
 };
+
+exports.getChannelStatistics = async function (channelId, date) {
+  const query = {};
+  if (channelId) {
+    query.channelId = channelId;
+  }
+  if (date) {
+    query.date = date;
+  }
+  const statistics = await ChannelStatisticModel.find(query);
+  return statistics;
+}
 
 exports.saveChannelStatistic = async function (channelStatistic) {
   /* Update if exsist, create if not exist */

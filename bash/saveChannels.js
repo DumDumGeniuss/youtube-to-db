@@ -23,7 +23,7 @@ async function saveChannelsInfo() {
       getChannelsPromises.push(youtubeApi.getChannels(item));
     });
   
-    /* Each result even contains lots of results, so we do loop twice */
+    /* Each result even contains lots of results, so we do double loop */
     const resFromChannelPromises = await Promise.all(getChannelsPromises);
     const channels = [];
     resFromChannelPromises.forEach((channelItems) => {
@@ -34,11 +34,14 @@ async function saveChannelsInfo() {
   
     /* Use this index to check if all the promises done */
     const saveChannelPromises = [];
-    channels.forEach(async function (channel) {
-      channels.push(mongoHelper.saveChannel(channel));
+    channels.forEach(function (channel) {
+      saveChannelPromises.push(mongoHelper.saveChannel(channel));
     });
-    await Promise.all(channels);
+    await Promise.all(saveChannelPromises);
+
+    /* Job finish */
     mongoConnection.close();
+    console.log('finish saving videos');
     return 'ok';
   } catch (e) {
     console.log(e);

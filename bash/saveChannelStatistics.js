@@ -16,34 +16,36 @@ async function saveChannelStatistics(timeZone) {
     const mongoConnection = await mongoHelper.getConnection();
   
     /* Get all channels' statistics */
-    const channelStatistics = await mongoHelper.getChannelStatistics();
+    const channelStatistics = await mongoHelper.getStatisticsFromChannel();
+
+    console.log('channel statistics number: ' + channelStatistics.length);
   
-    let checkSaveEndIndex = 0;
+    const saveChannelStatisticPromises = [];
 
     /* Save all new statistics */
-    channelStatistics.forEach(async function (item) {
-      const newStatistic = {
-        channelId: item.id,
-        date: dateString,
-        createdAt: dateNow,
-        viewCount: item.viewCount,
-        commentCount: item.commentCount,
-        subscriberCount: item.subscriberCount,
-        videoCount: item.videoCount,
-      };
-      /* If today's data already exists, skip it */
-      const oldStatistic = await ChannelStatisticModel.find({ channelId: newStatistic.channelId, date: newStatistic.date });
-      console.log(oldStatistic);
-      if (oldStatistic.length === 0) {
-        await mongoHelper.saveChannelStatistic(newStatistic);
-      }
-      checkSaveEndIndex += 1;
-      if (checkSaveEndIndex === channelStatistics.length) {
-        mongoConnection.close();
-      }
+    channelStatistics.forEach((channelStatistic) => {
+      saveChannelStatisticPromises.push(async function() {
+        const newStatistic = {
+          channelId: channelStatistic._id,
+          date: dateString,
+          createdAt: dateNow,
+          viewCount: channelStatistic.viewCount,
+          commentCount: channelStatistic.commentCount,
+          subscriberCount: channelStatistic.subscriberCount,
+          videoCount: channelStatistic.videoCount,
+        };
+        const oldStatistics = await mongoHelper.getChannelStatistics(newStatistic.channelId, newStatistic.date);
+        if (oldStatistics.length === 0) {
+          await mongoHelper.saveChannelStatistic(newStatistic);
+        }
+      }());
     });
 
-    // mongoConnection.close();
+    await Promise.all(saveChannelStatisticPromises);
+
+    mongoConnection.close();
+    console.log('Finish saving channel statistics');
+    return 'ok';
   } catch (e) {
     console.log(e);
   }

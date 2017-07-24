@@ -60,52 +60,37 @@ exports.getInfoFromChannelAboutPage = (channelId) => {
   });
 };
 
-exports.getChannels = (ids) => {
+exports.getChannels = async function (ids) {
   let idParam = '';
   let queryString;
   idParam = encodeURIComponent(ids.toString());
   queryString = '?part=statistics,snippet,brandingSettings&id=' + idParam + '&key=' + apiKey;
 
-  return fetch(youtubeApi + 'channels' + queryString, {
+  const res = await fetch(youtubeApi + 'channels' + queryString, {
     method: 'GET',
-  })
-  .then((res) => {
-    return res.json();
-  })
-  .then((res) => {
-    if (res.error) {
-      console.log(res.error);
-    }
-    return res.items;
-  })
-  .catch((err) => {
-    console.log(err);
   });
+  const finalRes = await res.json();
+  if (finalRes.error) {
+      throw finalRes.error;
+  }
+  return finalRes.items;
 };
 
 /* Get all targeted videos*/
-const getVideos = (ids) => {
+const getVideos = async function (ids) {
   let idParam = '';
   let queryString;
   idParam = encodeURIComponent(ids.toString());
   queryString = `?part=statistics,snippet,contentDetails&id=${idParam}&key=${apiKey}`;
 
-  // console.log('call videos Api, quota 7');
-  return fetch(youtubeApi + 'videos' + queryString, {
+  const res = await fetch(youtubeApi + 'videos' + queryString, {
     method: 'GET',
-  })
-  .then((res) => {
-    return res.json();
-  })
-  .then((res) => {
-    if (res.error) {
-      console.log(res.error);
-    }
-    return res.items;
-  })
-  .catch((err) => {
-    console.log(err);
   });
+  const finalRes = await res.json();
+  if (finalRes.error) {
+      throw finalRes.error;
+  }
+  return finalRes.items;
 };
 exports.getVideos = getVideos;
 
@@ -158,26 +143,22 @@ const getVideoCategories = () => {
 exports.getVideoCategories = getVideoCategories;
 
 
-/* Get all videos from on channel */
-const getChannelVideos = (channelId, pageToken, date, sort) => {
+/* Get all videos from one channel */
+const getChannelVideos = async function (channelId, pageToken, date, sort) {
   let queryString;
   let querySort = sort || 'date';
   let queryDate = date || '1970-01-01T00:00:00Z';
   queryString = `?part=snippet&type=video&channelId=${channelId}&key=${apiKey}&maxResults=50&order=${querySort}&pageToken=${pageToken}&publishedAfter=${queryDate}`;
 
   // console.log('call search Api, quota 100');
-  return fetch(youtubeApi + 'search' + queryString, {
+  const res = await fetch(youtubeApi + 'search' + queryString, {
     method: 'GET',
-  })
-  .then((res) => {
-    if (res.error) {
-      console.log(res.error);
-    }
-    return res.json();
-  })
-  .catch((err) => {
-    console.log(err);
   });
+  const finalRes = await res.json();
+  if (finalRes.error) {
+      throw finalRes.error;
+  }
+  return finalRes;
 };
 exports.getChannelVideos = getChannelVideos;
 

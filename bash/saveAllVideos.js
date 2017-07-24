@@ -31,7 +31,6 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     // channelIds = ['UC9RyS1FHuKR5C1A0vC6F55w'];
   
     const getAllVideosPromises = [];
-    const videoIds = [];
   
     /* Use all channelIds to get all videos of those channelIds */
     channelIds.forEach((channelId) => {
@@ -39,6 +38,7 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     });
 
     const resFromGetAllVideosPromises = await Promise.all(getAllVideosPromises);
+    const videoIds = [];
 
     resFromGetAllVideosPromises.forEach((channelVideos) => {
       channelVideos.forEach((item) => {
