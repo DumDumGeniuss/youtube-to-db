@@ -42,7 +42,7 @@ async function saveChannelsInfo() {
 
     /* Job finish */
     mongoConnection.close();
-    console.log('finish saving videos');
+    console.log('finish saving channels');
     return 'ok';
   } catch (e) {
     if (mongoConnection) {

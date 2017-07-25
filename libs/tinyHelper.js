@@ -14,6 +14,16 @@ exports.splitArray = function (array, count) {
   return final;
 };
 
+exports.eliminateValueFromArray = function (array, value) {
+  let size = array.length;
+  for (let i = 0; i < size; i++) {
+    if (array[i] === value) {
+      array.splice(i, 1);
+      i -=1;
+    }
+  }
+}
+
 exports.getMostFrequentParams = function (objects, param) {
   const valueShowCountMap = {};
   let currentHighCount = 0;

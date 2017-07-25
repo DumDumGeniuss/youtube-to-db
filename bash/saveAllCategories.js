@@ -10,6 +10,7 @@ async function saveAllCategories(timeZone) {
 
     /* Get all video categories and save it to Category document */
     const videoCategories = await mongoHelper.getVideoCategories();
+    tinyHelper.eliminateValueFromArray(videoCategories, null);
     const newVideoCategory = {
       _id: 'videoCategory',
       categories: videoCategories,
@@ -18,6 +19,7 @@ async function saveAllCategories(timeZone) {
 
     /* Get all channel categories and save it to Category document */
     const channelCategories = await mongoHelper.getChannelCategories();
+    tinyHelper.eliminateValueFromArray(channelCategories, null);
     const newChannelCategory = {
       _id: 'channelCategory',
       categories: channelCategories,
@@ -26,6 +28,7 @@ async function saveAllCategories(timeZone) {
 
     /* Get all countries and save it to Category document */
     const channelCountries = await mongoHelper.getChannelCountries();
+    tinyHelper.eliminateValueFromArray(channelCountries, null);
     const newCountryCategory = {
       _id: 'countryCategory',
       categories: channelCountries,
