@@ -5,9 +5,10 @@ const mongoHelper = require('../libs/mongoHelper');
 
 
 async function saveChannelsInfo() {
+  let mongoConnection;
   try {
     /* Wait for mongodb connection */
-    const mongoConnection = await mongoHelper.getConnection();
+    mongoConnection = await mongoHelper.getConnection();
   
     /* Get all channels' Id */
     const channelIds = await mongoHelper.getChannelIds();
@@ -44,7 +45,10 @@ async function saveChannelsInfo() {
     console.log('finish saving videos');
     return 'ok';
   } catch (e) {
-    console.log(e);
+    if (mongoConnection) {
+      mongoConnection.close();
+    }
+    throw e;
   }
 }
 

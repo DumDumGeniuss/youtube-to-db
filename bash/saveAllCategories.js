@@ -3,9 +3,10 @@ const mongoHelper = require('../libs/mongoHelper');
 // const moment = require('moment-timezone');
 
 async function saveAllCategories(timeZone) {
+  let mongoConnection;
   try {
     /* Wait for mongodb connection */
-    const mongoConnection = await mongoHelper.getConnection();
+    mongoConnection = await mongoHelper.getConnection();
 
     /* Get all video categories and save it to Category document */
     const videoCategories = await mongoHelper.getVideoCategories();
@@ -31,9 +32,16 @@ async function saveAllCategories(timeZone) {
     }
     await mongoHelper.saveCategories(newCountryCategory);
 
+    /* Job finish */
     mongoConnection.close();
+    console.log('finish saving all categories');
+    return 'ok';
+
   } catch (e) {
-    console.log(e);
+    if (mongoConnection) {
+      mongoConnection.close();
+    }
+    throw e;
   }
 }
 

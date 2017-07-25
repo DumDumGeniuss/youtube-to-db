@@ -2,16 +2,16 @@ const mongoHelper = require('../libs/mongoHelper');
 const tinyHelper = require('../libs/tinyHelper');
 
 async function determineChannelCategories() {
+  let mongoConnection;
   try {
     /* Wait for mongodb connection */
-    const mongoConnection = await mongoHelper.getConnection();
+    mongoConnection = await mongoHelper.getConnection();
 
     const channelIds = await mongoHelper.getChannelIds();
 
-    let checkEndIndex = 0;
-    const channelIdsSize = channelIds.length;
-    channelIds.forEach(async function (channelId) {
-      try {
+    const determineChannelCategoryPromises = [];
+    channelIds.forEach((channelId) => {
+      determineChannelCategoryPromises.push(async function() {
         const videos = await mongoHelper.getVideos(channelId, 'date', 50, 'desc');
         const category = tinyHelper.getMostFrequentParams(videos, 'category');
         const channelToUpdate = {
@@ -19,17 +19,20 @@ async function determineChannelCategories() {
           category: category,
         }
         await mongoHelper.saveChannel(channelToUpdate);
-        checkEndIndex += 1;
-        if (checkEndIndex === channelIdsSize) {
-          mongoConnection.close();
-        }
-      } catch (e) {
-        console.log(e);
-      }
+        return 'finish ' + channelId;
+      }());
     });
-    // await Promise.all(determineChannelTypePromises);
+    await Promise.all(determineChannelCategoryPromises);
+
+    /* Job finish */
+    mongoConnection.close();
+    console.log('finish determining channel category');
+    return 'ok';
   } catch (e) {
-    console.log(e);
+    if (mongoConnection) {
+      mongoConnection.close();
+    }
+    throw e;
   }
 }
 

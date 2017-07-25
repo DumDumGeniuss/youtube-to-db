@@ -4,6 +4,7 @@ const ChannelStatisticModel = require('../models/ChannelStatistic');
 const moment = require('moment-timezone');
 
 async function saveChannelStatistics(timeZone) {
+  let mongoConnection;
   try {
 
     const dateNow = new Date();
@@ -13,7 +14,7 @@ async function saveChannelStatistics(timeZone) {
     console.log(dateString);
 
     /* Wait for mongodb connection */
-    const mongoConnection = await mongoHelper.getConnection();
+    mongoConnection = await mongoHelper.getConnection();
   
     /* Get all channels' statistics */
     const channelStatistics = await mongoHelper.getStatisticsFromChannel();
@@ -24,6 +25,7 @@ async function saveChannelStatistics(timeZone) {
 
     /* Save all new statistics */
     channelStatistics.forEach((channelStatistic) => {
+      /* Immediately run the async function, it's important */
       saveChannelStatisticPromises.push(async function() {
         const newStatistic = {
           channelId: channelStatistic._id,
@@ -47,7 +49,10 @@ async function saveChannelStatistics(timeZone) {
     console.log('Finish saving channel statistics');
     return 'ok';
   } catch (e) {
-    console.log(e);
+    if (mongoConnection) {
+      mongoConnection.close();
+    }
+    throw e;
   }
 }
 

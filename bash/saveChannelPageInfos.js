@@ -4,36 +4,45 @@ const moment = require('moment-timezone');
 const youtubeApi = require('../libs/youtubeApi');
 
 async function saveChannelPageInfos() {
+  let mongoConnection;
   try {
     /* Wait for mongodb connection */
-    const mongoConnection = await mongoHelper.getConnection();
+    mongoConnection = await mongoHelper.getConnection();
   
     /* Get all channels' id */
     const channelIds = await mongoHelper.getChannelIds();
     const channelIdsSize = channelIds.length;
 
-    let checkSaveEndIndex = 0;
+    const saveChannelPageInfoPromises = [];
 
     /* Save all information from channel's About Page */
-    channelIds.forEach(async function (channelId) {
-      const info = await youtubeApi.getInfoFromChannelAboutPage(channelId);
-      if (info) {
-        const channel = {
-          _id: channelId,
-          country: info.country,
-          socialInfos: info.socialInfos,
+    channelIds.forEach((channelId) => {
+      saveChannelPageInfoPromises.push(async function() {
+        const info = await youtubeApi.getInfoFromChannelAboutPage(channelId);
+        if (info) {
+          const channel = {
+            _id: channelId,
+            country: info.country,
+            socialInfos: info.socialInfos,
+          }
+          await mongoHelper.saveChannel(channel);
+          return 'finish ' + channelId;
         }
-        await mongoHelper.saveChannel(channel);
-      }
-      checkSaveEndIndex += 1;
-      if (checkSaveEndIndex === channelIdsSize) {
-        mongoConnection.close();
-      }
+      }());
     });
 
-  } catch (e) {
+    await Promise.all(saveChannelPageInfoPromises);
+
+    /* Job finish */
     mongoConnection.close();
-    console.log(e);
+    console.log('finish saving channel page infos');
+    return 'ok';
+
+  } catch (e) {
+    if (mongoConnection) {
+      mongoConnection.close();
+    }
+    throw e;
   }
 }
 

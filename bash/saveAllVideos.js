@@ -4,10 +4,11 @@ const mongoHelper = require('../libs/mongoHelper');
 const moment = require('moment');
 
 async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
+  let mongoConnection;
 
   try {
     /* Wait for mongodb connection */
-    const mongoConnection = await mongoHelper.getConnection();
+    mongoConnection = await mongoHelper.getConnection();
 
     /* Get video categories from youtube */
     const videoCategories = await youtubeApi.getVideoCategories();
@@ -76,7 +77,10 @@ async function saveAllVideosInfo(targetId, onlyThisMonth, sort) {
     return 'ok';
 
   } catch (e) {
-    console.log(e);
+    if (mongoConnection) {
+      mongoConnection.close();
+    }
+    throw e;
   }
 }
 
