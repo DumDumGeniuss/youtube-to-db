@@ -2,6 +2,7 @@ const tinyHelper = require('../libs/tinyHelper');
 const mongoHelper = require('../libs/mongoHelper');
 const moment = require('moment-timezone');
 const youtubeApi = require('../libs/youtubeApi');
+const socialBladeApi = require('../libs/socialBladeApi');
 
 async function saveChannelPageInfos() {
   let mongoConnection;
@@ -20,10 +21,15 @@ async function saveChannelPageInfos() {
       saveChannelPageInfoPromises.push(async function() {
         const info = await youtubeApi.getInfoFromChannelAboutPage(channelId);
         if (info) {
+          let country = info.country;
+          let socialInfos = info.socialInfos;
+          if (!country) {
+            country = await socialBladeApi.getCountryFromSocialBlade(channelId);
+          }
           const channel = {
             _id: channelId,
-            country: info.country,
-            socialInfos: info.socialInfos,
+            country,
+            socialInfos,
           }
           await mongoHelper.saveChannel(channel);
           return 'finish ' + channelId;
