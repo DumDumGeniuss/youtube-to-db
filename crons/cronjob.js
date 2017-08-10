@@ -7,6 +7,8 @@ const saveChannelStatistics = require('../bash/saveChannelStatistics');
 const saveChannelPageInfos = require('../bash/saveChannelPageInfos');
 const saveAllCategories = require('../bash/saveAllCategories');
 const determineChannelCategories = require('../bash/determineChannelCategories');
+const scrapeFacebook = require('../bash/scrapeFacebook');
+
 const config = require('../config.js');
 
 const logger = new (winston.Logger)({
@@ -83,3 +85,25 @@ const mainJobCron = new cron.CronJob({
 });
 
 mainJobCron.start();
+
+
+/* Hey, scrape facebook */
+async function scrapeFacebookJob() {
+  try {
+    scrapeFacebook();
+  } catch (e) {
+    console.error(e);
+    logger.error(e);
+  }
+};
+
+const scrapeFacebookCron = new cron.CronJob({
+  cronTime: '0,10,20,30,40,50 * * * * *',
+  onTick: function() {
+    scrapeFacebookJob();
+  },
+  start: false,
+  timeZone: 'Asia/Taipei'
+});
+
+scrapeFacebookCron.start();
