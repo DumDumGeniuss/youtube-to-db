@@ -4,6 +4,7 @@ const ChannelModel = require('../models/Channel');
 const VideoModel = require('../models/Video');
 const ChannelStatisticModel = require('../models/ChannelStatistic');
 const CategoryModel = require('../models/Category');
+const CandidateChannelModel = require('../models/CandidateChannel');
 
 mongoose.Promise = global.Promise;
 
@@ -30,9 +31,19 @@ exports.getVideos = async function (channelId, sort, count, order) {
   return videos;
 };
 
+exports.deleteChannel = async function (channelId) {
+  await ChannelModel.deleteOne({ _id: channelId});
+  return 'ok';
+};
+
 exports.getVideoCategories = async function () {
   const videoCategories = await VideoModel.find({}).distinct('category');
   return videoCategories;
+};
+
+exports.deleteChannelVideos = async function (channelId) {
+  await VideoModel.remove({ channelId: channelId });
+  return 'ok';
 };
 
 exports.getChannelCategories = async function () {
@@ -84,8 +95,18 @@ exports.saveChannelStatistic = async function (channelStatistic) {
   return 'ok';
 };
 
+exports.deleteChannelStatistics = async function (channelId) {
+  await ChannelStatisticModel.remove({ channelId: channelId });
+  return 'ok';
+};
+
 exports.saveVideo = async function (video) {
   /* Update if exsist, create if not exist */
   await VideoModel.update({_id: video._id}, video, {upsert: true});
+  return 'ok';
+};
+
+exports.deleteCandidateChannel = async function (channelId) {
+  await CandidateChannelModel.deleteOne({ _id: channelId });
   return 'ok';
 };
