@@ -18,17 +18,21 @@ const countryMap = {
 };
 
 exports.getCountryFromSocialBlade = async function (channelId) {
-  let $;
-  let url = socialBladeChannelUrl.replace('$1', channelId);
-
-  const result = await fetch(url, {
-      method: 'GET',
-    });
-  const html = await result.text();
-
-  $ = cheerio.load(html);
-
-  const countrySpan = $('#youtube-stats-header-country')[0];
-  const country = countrySpan.children[0].data;
-  return countryMap[country] || null;
+  try {
+    let $;
+    let url = socialBladeChannelUrl.replace('$1', channelId);
+  
+    const result = await fetch(url, {
+        method: 'GET',
+      });
+    const html = await result.text();
+  
+    $ = cheerio.load(html);
+  
+    const countrySpan = $('#youtube-stats-header-country')[0];
+    const country = countrySpan.children[0].data;
+    return countryMap[country] || null;
+  } catch (e) {
+    return null;
+  }
 };
