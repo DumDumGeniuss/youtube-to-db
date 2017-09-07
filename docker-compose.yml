@@ -4,3 +4,4 @@ services:
     build: .
     command:
         ['/usr/local/bin/node', '/usr/src/app/crons/cronjob.js']
+    restart: always
