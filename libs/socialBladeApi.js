@@ -15,6 +15,8 @@ const countryMap = {
   'US': 'UnitedStates',
   'MO': 'Macao',
   'CN': 'China',
+  'FR': 'France',
+  'AU': 'Australia',
 };
 
 exports.getCountryFromSocialBlade = async function (channelId) {
