@@ -17,6 +17,7 @@ const countryMap = {
   'CN': 'China',
   'FR': 'France',
   'AU': 'Australia',
+  'KR': 'SouthKorea',
 };
 
 exports.getCountryFromSocialBlade = async function (channelId) {
